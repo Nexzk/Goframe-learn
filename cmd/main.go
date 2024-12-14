@@ -22,9 +22,19 @@ func (Hello) Say(ctx context.Context, req *HelloReq) (res *HelloRes, err error) 
 	return
 }
 
+func ErrorHandler(r *ghttp.Request) {
+	//执行路由回调函数
+	r.Middleware.Next()
+	if err := r.GetError(); err != nil {
+		r.Response.Write("error occurs:", err.Error())
+		return
+	}
+}
+
 func main() {
 	s := g.Server()
 	s.Group("/", func(group *ghttp.RouterGroup) {
+		group.Middleware(ErrorHandler)
 		group.Bind(new(Hello))
 	})
 	s.SetPort(8080)
