@@ -9,6 +9,8 @@ import (
 )
 
 type HelloReq struct {
+	name string // 姓名
+	age  int    // 年龄
 }
 
 func main() {
