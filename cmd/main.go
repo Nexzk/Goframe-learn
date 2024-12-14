@@ -1,24 +1,33 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
-
-	"github.com/gogf/gf/v2"
 )
 
 type HelloReq struct {
-	name string // 姓名
-	age  int    // 年龄
+	Name string // 姓名
+	Age  int    // 年龄
 }
 
 func main() {
 	s := g.Server()
 	s.BindHandler("/", func(r *ghttp.Request) {
-		r.Response.Writef("hello %s!,your age is %d", r.Get("name", "unknow").String(), r.Get("age", 18).Int())
+		var req HelloReq
+		if err := r.Parse(&req); err != nil {
+			r.Response.Write(err.Error())
+			return
+		}
+		if req.Name == "" {
+			r.Response.Write("name should not be empty")
+			return
+		}
+		if req.Age <= 0 {
+			r.Response.Write("invalid age value")
+			return
+		}
+		r.Response.Writef("hello %s! your age is %d", req.Name, req.Age)
 	})
 	s.SetPort(8080)
 	s.Run()
-	fmt.Println("Hello Gofraemwork!:", gf.VERSION)
 }
